@@ -1,30 +1,24 @@
 export const formfields=[
     {
-        key:"full_name",
+        key:"name",
         type:"input",
         label:"Full Name",
         placeHolder:"Enter your Full Name", 
     },
     {
-        key:"student_no",
+        key:"studentNo",
         type:"input",
         label:"Student No",
         placeHolder:"Enter your Student No", 
     },
     {
-        key:"roll_no",
-        type:"input",
-        label:"University Roll No",
-        placeHolder:"Enter your Roll No", 
-    },
-    {
-        key:"phone_no",
+        key:"mobileNo",
         type:"input",
         label:"Mobile Number",
         placeHolder:"Enter your Whatsapp Number", 
     },
     {
-        key:"email",
+        key:"email_",
         type:"input",
         label:"Email",
         placeHolder:"Enter your email", 
