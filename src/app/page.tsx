@@ -33,7 +33,7 @@ const FormSchema = z.object({
     .trim()
     .refine(
       (value) =>
-        /^[a-zA-Z]{2,15}(\s[a-zA-Z.]{1,10})?(\s[a-zA-Z]{2,10})?(\s[a-zA-Z]{2,10})?$/.test(
+        /^[a-zA-Z]{2,20}(\s[a-zA-Z.]{1,10})?(\s[a-zA-Z]{2,10})?(\s[a-zA-Z]{2,10})?$/.test(
           value
         ),
       { message: "Please Enter Full Name" }
@@ -41,9 +41,12 @@ const FormSchema = z.object({
   studentNo: z
     .string()
     .trim()
-    .refine((value) => /^2[12]{1}[0-9]{5,6}$/.test(value), {
-      message: "Please Enter Correct Student Number",
-    }),
+    .refine(
+      (value) => /^[2][12](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
+      {
+        message: "Please Enter Correct Student Number",
+      }
+    ),
   mobileNo: z
     .string()
     .trim()
