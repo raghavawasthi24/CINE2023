@@ -6,7 +6,7 @@ import Image from 'next/image'
 import axios from 'axios'
 import { useParams } from 'react-router-dom';
 
-const page = () => {
+const Page = () => {
     const { id } = useParams();
     useEffect(()=>{
         axios.post(`https://csi-examportal.onrender.com/api/verify/${id}`)
@@ -26,4 +26,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
