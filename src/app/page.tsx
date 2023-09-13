@@ -129,7 +129,7 @@ export default function Page() {
           })
           .then((token) => {
             // You can send the 'token' to your server for verification.
-            // console.log("reCAPTCHA token:", token);
+            console.log("reCAPTCHA token:", token);
             setRecaptcha(token);
           });
       });
@@ -148,7 +148,7 @@ export default function Page() {
     const studentNo = data.studentNo;
     // Construct the expected email
     const expectedEmail = new RegExp(`^[a-z]+${studentNo}@akgec.ac.in$`);
-    // console.log(data, expectedEmail);
+    console.log(data, expectedEmail);
 
     // Check if the submitted email matches the expected email
     if (!expectedEmail.test(data.email.toLowerCase())) {
