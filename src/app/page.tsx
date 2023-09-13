@@ -47,7 +47,7 @@ const FormSchema = z.object({
   studentNo: z
     .string()
     .trim()
-    .refine((value) => /^22[0-9]{5,6}$/.test(value), {
+    .refine((value) => /^2[12]{1}[0-9]{5,6}$/.test(value), {
       message: "Please Enter Correct Student Number",
     }),
   mobileNo: z
@@ -60,7 +60,7 @@ const FormSchema = z.object({
     .string()
     .trim()
     .refine(
-      (value) => /^([a-zA-Z]){2,15}22[0-9]{5,6}@akgec.ac.in$/.test(value),
+      (value) => /^([a-zA-Z]){2,15}2[12]{1}[0-9]{5,6}@akgec.ac.in$/.test(value),
       { message: "Please Enter Correct College Email Id" }
     ),
   branch: z.enum(["CSE", "IT"]),
@@ -160,12 +160,7 @@ export default function Page() {
       console.log(res)
     })
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      description: "Please check your email to verify!",
     });
   }
 
