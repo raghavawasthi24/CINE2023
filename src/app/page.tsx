@@ -161,7 +161,7 @@ export default function Page() {
     .catch((err)=>{
       toast({
         variant:"destructive",
-        description: "Please check your email to verify!",
+        description: "Something went wrong! Please Try Again",
       });
     })
    
@@ -224,7 +224,7 @@ export default function Page() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-1/2 p-6 space-y-6"
         >
-          <p className="font-semibold text-center text-lg text-blue-700">Hey! Get Yourself Registered</p>
+          <p className="font-semibold text-center text-[100px] text-blue-700">Hey! Get Yourself Registered</p>
           {formfields.map((fields, index) => {
             if (fields.type === "input")
               return (
