@@ -91,7 +91,7 @@ export default function Page() {
   const [branchVerification, setBranchVerification] = useState(false);
 
   // Find the corresponding branch name in the branch_code array
-  const getBranchVerification = (data) => {
+  const getBranchVerification = (data:any) => {
     branch_code.map((item) => {
       if (
         item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
@@ -177,7 +177,7 @@ export default function Page() {
     // console.log(re_defindData);
 
     // Function to encrypt the data using CryptoJS
-    const encryptData = (data, secretKey) => {
+    const encryptData = (data:any, secretKey:any) => {
       try {
         const dataString = JSON.stringify(data);
         const encrypted = CryptoJS.AES.encrypt(
