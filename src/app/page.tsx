@@ -158,6 +158,12 @@ export default function Page() {
         description: "Please check your email to verify!",
       });
     })
+    .catch((err)=>{
+      toast({
+        variant:"destructive",
+        description: "Please check your email to verify!",
+      });
+    })
    
   }
 
@@ -218,7 +224,7 @@ export default function Page() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-1/2 p-6 space-y-6"
         >
-          <p className="font-semibold text-center text-lg text-blue-700">REGISTER NOW!</p>
+          <p className="font-semibold text-center text-lg text-blue-700">Hey! Get Yourself Registered</p>
           {formfields.map((fields, index) => {
             if (fields.type === "input")
               return (
@@ -242,7 +248,7 @@ export default function Page() {
                 />
               );
           })}
-          <Button type="submit" className=" bg-blue-600 w-[130px]">
+          <Button type="submit" className=" bg-[#0A012A] w-full">
           <BsFillSendFill className="w-4 h-4 mr-2 text-white"/>Submit
           </Button>
         </form>
