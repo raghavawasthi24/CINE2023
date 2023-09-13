@@ -18,7 +18,7 @@ export const formfields=[
         placeHolder:"Enter your Whatsapp Number", 
     },
     {
-        key:"email_",
+        key:"email",
         type:"input",
         label:"Email",
         placeHolder:"Enter your email", 
@@ -30,11 +30,11 @@ export const formfields=[
         placeHolder:"Select your Branch",
         options:[
             {
-                value:"cse",
+                value:"CSE",
                 label:"CSE"
             },
             {
-                value:"it",
+                value:"IT",
                 label:"IT"
             }
         ]
@@ -46,11 +46,11 @@ export const formfields=[
         placeHolder:"Select your Gender", 
         options:[
             {
-                value:"male",
+                value:"Male",
                 label:"Male"
             },
             {
-                value:"female",
+                value:"Female",
                 label:"Female"
             },
             {
