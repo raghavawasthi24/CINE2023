@@ -11,14 +11,10 @@ import { formfields } from "./formfields";
 import SelectField from "./components/SelectField";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios"
-import CryptoJS from 'crypto-js';
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Poster from "../../public/CINE.png"
 import {BsFillSendFill }from "react-icons/bs"
-import {
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
 
 
 declare global {
@@ -158,10 +154,11 @@ export default function Page() {
     };
     axios.post("https://csi-examportal.onrender.com/api/v1/auth/register",re_defindData, { headers }).then((res)=>{
       console.log(res)
+      toast({
+        description: "Please check your email to verify!",
+      });
     })
-    toast({
-      description: "Please check your email to verify!",
-    });
+   
   }
 
   // const encryptData = (data:any, secretKey:any) => {
