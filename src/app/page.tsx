@@ -1,4 +1,5 @@
 "use client";
+import CryptoJS from "crypto-js"; // Add this import
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,6 +16,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Poster from "../../public/CINE.png";
 import { BsFillSendFill } from "react-icons/bs";
+import branch_code from "./constants/branchCode";
 
 declare global {
   interface Window {
@@ -86,11 +88,23 @@ export default function Page() {
   const { toast } = useToast();
   const [csrfToken, setCsrfToken] = useState("");
   const [captcha, setRecaptcha] = useState("");
+  const [branchVerification, setBranchVerification] = useState(false);
+
+  // Find the corresponding branch name in the branch_code array
+  const getBranchVerification = (data) => {
+    branch_code.map((item) => {
+      if (
+        item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
+        item.branch === data.branch
+      )
+        setBranchVerification(true);
+    });
+  };
 
   useEffect(() => {
     // Fetch CSRF token from the backend
     axios
-      .get("https://csi-examportal.onrender.com/api/v1/auth/preregistration")
+      .get(`${process.env.NEXT_PUBLIC_NODE_API}/preregistration`)
       .then((response) => {
         setCsrfToken(response.data.csrfToken);
       })
@@ -102,8 +116,7 @@ export default function Page() {
   useEffect(() => {
     // Load the reCAPTCHA script dynamically
     const script = document.createElement("script");
-    script.src =
-      "https://www.google.com/recaptcha/api.js?render=6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC";
+    script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`;
     script.async = true;
 
     script.onload = () => {
@@ -111,12 +124,12 @@ export default function Page() {
       // Replace YOUR_RECAPTCHA_SITE_KEY with your actual reCAPTCHA site key.
       window.grecaptcha.ready(() => {
         window.grecaptcha
-          .execute("6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC", {
+          .execute(`${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`, {
             action: "submit",
           })
           .then((token) => {
             // You can send the 'token' to your server for verification.
-            console.log("reCAPTCHA token:", token);
+            // console.log("reCAPTCHA token:", token);
             setRecaptcha(token);
           });
       });
@@ -130,161 +143,125 @@ export default function Page() {
     };
   }, []);
 
-  // const GoogleCaptcha = () => {
-  //   const { executeRecaptcha } = useGoogleReCaptcha();
-  //   const handleReCaptchaVerify = useCallback(async () => {
-  //     if (!executeRecaptcha) {
-  //       console.log("Execute recaptcha not yet available");
-  //       return;
-  //     }
-
-  //     const token = await executeRecaptcha();
-  //     console.log(token)
-
-  //     setRecaptcha(token)
-  //   }, [executeRecaptcha]);
-
-  //   useEffect(() => {
-  //     handleReCaptchaVerify();
-
-  //   }, [handleReCaptchaVerify]);
-
-  // };
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // Extract the student number from the form data
     const studentNo = data.studentNo;
-
     // Construct the expected email
-    const expectedEmail = `${data.name}${studentNo}@akgec.ac.in`;
+    const expectedEmail = new RegExp(`^[a-z]+${studentNo}@akgec.ac.in$`);
+    // console.log(data, expectedEmail);
 
     // Check if the submitted email matches the expected email
-    if (data.email !== expectedEmail) {
+    if (!expectedEmail.test(data.email.toLowerCase())) {
       toast({
         variant: "destructive",
         description: "College Email Id and Student Number does not match!",
       });
       return; // Do not proceed with form submission
     }
-    const secretKey =
-      "b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37"; // 128-bit key
+    // Check if the branch and student number match
+    getBranchVerification(data);
+    if (!branchVerification) {
+      toast({
+        variant: "destructive",
+        description: "Select correct branch!",
+      });
+      return; // Do not proceed with form submission
+    }
+    const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY; // 128-bit key
 
-    console.log(data);
+    // console.log(data);
     const re_defindData = {
       ...data,
       recaptchaToken: captcha,
     };
-    console.log(re_defindData);
-    // const key="04e055a20e3b46ef6b26595c1533b8b360978ac0104e43571bbb9d894daadc86377817b1da0c2d68ed9fbabb7725f7dbf772e80e1161fcf32d2968c0cb02cf0f53"
-    // const encrypted_data=encryptData(re_defindData,secretKey)
-    // console.log("ye",encrypted_data)
-    const headers = {
-      "X-CSRF-Token": csrfToken,
+    // console.log(re_defindData);
+
+    // Function to encrypt the data using CryptoJS
+    const encryptData = (data, secretKey) => {
+      try {
+        const dataString = JSON.stringify(data);
+        const encrypted = CryptoJS.AES.encrypt(
+          dataString,
+          secretKey
+        ).toString();
+        return encrypted;
+      } catch (error) {
+        // console.error("Encryption error:", error);
+        return null; // Handle the error as needed
+      }
     };
-    axios
-      .post(
-        "https://csi-examportal.onrender.com/api/v1/auth/register",
-        re_defindData,
-        { headers }
-      )
-      .then((res) => {
-        console.log(res);
-        toast({
-          description: "Please check your email to verify!",
+    // Encrypt the data
+    const encryptedData = encryptData(re_defindData, secretKey);
+
+    if (encryptedData) {
+      // Proceed with the encrypted data in your HTTP request.
+      const headers = {
+        "X-CSRF-Token": csrfToken,
+      };
+      // console.log(encryptedData);
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_NODE_API}/Decregister`,
+          { encryptedData, recaptchaToken: captcha },
+          { headers }
+        )
+        .then(() => {
+          // console.log(res);
+          toast({
+            description: "Please check your email to verify!",
+          });
+        })
+        .catch(() => {
+          toast({
+            variant: "destructive",
+            description: "Something went wrong! Please Try Again",
+          });
         });
-      })
-      .catch((err) => {
-        toast({
-          variant: "destructive",
-          description: "Something went wrong! Please Try Again",
-        });
-      });
+    }
   }
-
-  // const encryptData = (data:any, secretKey:any) => {
-  // console.log("jbrbfhew")
-  // // Create an initialization vector (IV) for added security
-  // const iv = CryptoJS.lib.WordArray.random(16);
-  // const dataString = JSON.stringify(data);
-
-  // // Encrypt the data using AES encryption and the provided secret key and IV
-  // const encrypted = CryptoJS.AES.encrypt(dataString, secretKey, {
-  //   // iv,
-  //   mode: CryptoJS.mode.CFB,
-  //   padding: CryptoJS.pad.Pkcs7,
-  // });
-
-  // // Combine the IV and ciphertext into a single string
-  // // const ciphertext = iv.toString() + encrypted.toString();
-  // const ciphertext = encrypted.toString();
-  //  console.log(ciphertext)
-  // return ciphertext;
-
-  //   console.log(data)
-  //   const dataString = JSON.stringify(data);
-
-  //   const key = 'b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37'; // Replace with your secret key
-  //   const encrypted = CryptoJS.AES.encrypt(dataString, key).toString();
-  //   console.log(encrypted)
-  //   return encrypted
-  //   // setEncryptedData(encrypted);
-  // };
-
-  // const encryptData = (data:any, secretKey:any) => {
-  //   console.log(data,secretKey)
-  //   try {
-  //     const dataString = JSON.stringify(data);
-  //     const encrypted = CryptoJS.AES.encrypt(dataString, secretKey).toString();
-  //     console.log(encrypted);
-  //     return encrypted;
-  //   } catch (error) {
-  //     console.error('Encryption error:', error);
-  //     return null; // Handle the error as needed
-  //   }
-  // };
 
   return (
     <div className="flex flex-col p-6 md:flex-row items-center md:items-start">
       <div className="w-[90%] md:w-1/2">
-        <Image src={Poster} alt="CINE"/>
+        <Image src={Poster} alt="CINE" />
       </div>
       <div className="w-full md:w-1/2 md:shadow-2xl md:ml-6 md:p-6 p-3 sm:w-[80%]">
-        <p className="font-semibold text-center md:text-[30px] text-[20px] text-[#0A012A] my-4">Hey! Get Yourself Registered</p>
+        <p className="font-semibold text-center md:text-[30px] text-[20px] text-[#0A012A] my-4">
+          Hey! Get Yourself Registered
+        </p>
         <Form {...form}>
-        
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-      
-          
-              {formfields.map((fields, index) => {
-                if (fields.type === "input")
-                  return (
-                    <InputField
-                      form={form}
-                      name={fields.key}
-                      label={fields.label}
-                      placeholder={fields.placeHolder}
-                      key={index}
-                    />
-                  );
-                else
-                  return (
-                    <SelectField
-                      form={form}
-                      name={fields.key}
-                      label={fields.label}
-                      placeholder={fields.placeHolder}
-                      options={fields.options || []}
-                      key={index}
-                    />
-                  );
-              })}
-  
+            {formfields.map((fields, index) => {
+              if (fields.type === "input")
+                return (
+                  <InputField
+                    form={form}
+                    name={fields.key}
+                    label={fields.label}
+                    placeholder={fields.placeHolder}
+                    key={index}
+                  />
+                );
+              else
+                return (
+                  <SelectField
+                    form={form}
+                    name={fields.key}
+                    label={fields.label}
+                    placeholder={fields.placeHolder}
+                    options={fields.options || []}
+                    key={index}
+                  />
+                );
+            })}
+
             <div className="w-full flex justify-center my-6">
               <Button type="submit" className="w-[200px] bg-[#0A012A]">
-              <BsFillSendFill className="w-4 h-4 mr-2 text-white"/>Submit
+                <BsFillSendFill className="w-4 h-4 mr-2 text-white" />
+                Submit
               </Button>
             </div>
           </form>

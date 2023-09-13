@@ -34,11 +34,11 @@ export const formfields = [
         label: "CSE",
       },
       {
-        value: "CSEDS",
+        value: "CSE-DS",
         label: "CSE-DS",
       },
       {
-        value: "CSEAIML",
+        value: "CSE-AIML",
         label: "CSE-AIML",
       },
       {
@@ -74,7 +74,7 @@ export const formfields = [
         label: "CE",
       },
       {
-        value: "CSEHINDI",
+        value: "CSE-HINDI",
         label: "CSE-HINDI",
       },
     ],
