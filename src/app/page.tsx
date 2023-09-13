@@ -10,12 +10,11 @@ import InputField from "./components/InputField";
 import { formfields } from "./formfields";
 import SelectField from "./components/SelectField";
 import { useToast } from "@/components/ui/use-toast";
-import axios from "axios"
+import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Poster from "../../public/CINE.png"
-import {BsFillSendFill }from "react-icons/bs"
-
+import Poster from "../../public/CINE.png";
+import { BsFillSendFill } from "react-icons/bs";
 
 declare global {
   interface Window {
@@ -27,7 +26,6 @@ interface ReCAPTCHA {
   ready: (callback: () => void) => void;
   execute: (sitekey: string, options: { action: string }) => Promise<string>;
 }
-
 
 const FormSchema = z.object({
   name: z
@@ -59,8 +57,21 @@ const FormSchema = z.object({
       (value) => /^([a-zA-Z]){2,15}2[12]{1}[0-9]{5,6}@akgec.ac.in$/.test(value),
       { message: "Please Enter Correct College Email Id" }
     ),
-  branch: z.enum(["CSE", "IT"]),
-  gender: z.enum(["Male", "Female", "none"]),
+  branch: z.enum([
+    "CSE",
+    "CSEDS",
+    "CSEAIML",
+    "AIML",
+    "IT",
+    "CSIT",
+    "CS",
+    "ECE",
+    "EN",
+    "ME",
+    "CE",
+    "CSEHINDI",
+  ]),
+  gender: z.enum(["Male", "Female"]),
   isHosteler: z.enum(["true", "false"]),
 });
 
@@ -70,35 +81,41 @@ export default function Page() {
   });
 
   const { toast } = useToast();
-  const [csrfToken, setCsrfToken] = useState('');
-  const [captcha,setRecaptcha]=useState("")
+  const [csrfToken, setCsrfToken] = useState("");
+  const [captcha, setRecaptcha] = useState("");
 
   useEffect(() => {
     // Fetch CSRF token from the backend
-    axios.get('https://csi-examportal.onrender.com/api/v1/auth/preregistration')
+    axios
+      .get("https://csi-examportal.onrender.com/api/v1/auth/preregistration")
       .then((response) => {
         setCsrfToken(response.data.csrfToken);
       })
       .catch((error) => {
-        console.error('Error fetching CSRF token:', error);
+        console.error("Error fetching CSRF token:", error);
       });
   }, []);
 
   useEffect(() => {
     // Load the reCAPTCHA script dynamically
-    const script = document.createElement('script');
-    script.src = 'https://www.google.com/recaptcha/api.js?render=6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC';
+    const script = document.createElement("script");
+    script.src =
+      "https://www.google.com/recaptcha/api.js?render=6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC";
     script.async = true;
 
     script.onload = () => {
       // Once the reCAPTCHA script is loaded, you can execute the reCAPTCHA verification.
       // Replace YOUR_RECAPTCHA_SITE_KEY with your actual reCAPTCHA site key.
       window.grecaptcha.ready(() => {
-        window.grecaptcha.execute('6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC', { action: 'submit' }).then((token) => {
-          // You can send the 'token' to your server for verification.
-          console.log('reCAPTCHA token:', token);
-          setRecaptcha(token)
-        });
+        window.grecaptcha
+          .execute("6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC", {
+            action: "submit",
+          })
+          .then((token) => {
+            // You can send the 'token' to your server for verification.
+            console.log("reCAPTCHA token:", token);
+            setRecaptcha(token);
+          });
       });
     };
 
@@ -110,8 +127,6 @@ export default function Page() {
     };
   }, []);
 
-
-
   // const GoogleCaptcha = () => {
   //   const { executeRecaptcha } = useGoogleReCaptcha();
   //   const handleReCaptchaVerify = useCallback(async () => {
@@ -119,73 +134,88 @@ export default function Page() {
   //       console.log("Execute recaptcha not yet available");
   //       return;
   //     }
-  
+
   //     const token = await executeRecaptcha();
-  //     console.log(token) 
+  //     console.log(token)
 
   //     setRecaptcha(token)
   //   }, [executeRecaptcha]);
-    
+
   //   useEffect(() => {
   //     handleReCaptchaVerify();
-  
+
   //   }, [handleReCaptchaVerify]);
-  
-   
+
   // };
 
-
-
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    const secretKey = "b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37"; // 128-bit key
+    // Extract the student number from the form data
+    const studentNo = data.studentNo;
 
-    console.log(data)
-    const re_defindData ={
+    // Construct the expected email
+    const expectedEmail = `${data.name}${studentNo}@akgec.ac.in`;
+
+    // Check if the submitted email matches the expected email
+    if (data.email !== expectedEmail) {
+      toast({
+        variant: "destructive",
+        description: "College Email Id and Student Number does not match!",
+      });
+      return; // Do not proceed with form submission
+    }
+    const secretKey =
+      "b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37"; // 128-bit key
+
+    console.log(data);
+    const re_defindData = {
       ...data,
-      "recaptchaToken":captcha
-    } 
-    console.log(re_defindData)
+      recaptchaToken: captcha,
+    };
+    console.log(re_defindData);
     // const key="04e055a20e3b46ef6b26595c1533b8b360978ac0104e43571bbb9d894daadc86377817b1da0c2d68ed9fbabb7725f7dbf772e80e1161fcf32d2968c0cb02cf0f53"
     // const encrypted_data=encryptData(re_defindData,secretKey)
     // console.log("ye",encrypted_data)
     const headers = {
-      'X-CSRF-Token': csrfToken,
+      "X-CSRF-Token": csrfToken,
     };
-    axios.post("https://csi-examportal.onrender.com/api/v1/auth/register",re_defindData, { headers }).then((res)=>{
-      console.log(res)
-      toast({
-        description: "Please check your email to verify!",
+    axios
+      .post(
+        "https://csi-examportal.onrender.com/api/v1/auth/register",
+        re_defindData,
+        { headers }
+      )
+      .then((res) => {
+        console.log(res);
+        toast({
+          description: "Please check your email to verify!",
+        });
+      })
+      .catch((err) => {
+        toast({
+          variant: "destructive",
+          description: "Something went wrong! Please Try Again",
+        });
       });
-    })
-    .catch((err)=>{
-      toast({
-        variant:"destructive",
-        description: "Something went wrong! Please Try Again",
-      });
-    })
-   
   }
 
   // const encryptData = (data:any, secretKey:any) => {
-    // console.log("jbrbfhew")
-    // // Create an initialization vector (IV) for added security
-    // const iv = CryptoJS.lib.WordArray.random(16);
-    // const dataString = JSON.stringify(data);
-  
-    // // Encrypt the data using AES encryption and the provided secret key and IV
-    // const encrypted = CryptoJS.AES.encrypt(dataString, secretKey, {
-    //   // iv,
-    //   mode: CryptoJS.mode.CFB,
-    //   padding: CryptoJS.pad.Pkcs7,
-    // });
-  
-    // // Combine the IV and ciphertext into a single string
-    // // const ciphertext = iv.toString() + encrypted.toString();
-    // const ciphertext = encrypted.toString();
-    //  console.log(ciphertext)
-    // return ciphertext;
+  // console.log("jbrbfhew")
+  // // Create an initialization vector (IV) for added security
+  // const iv = CryptoJS.lib.WordArray.random(16);
+  // const dataString = JSON.stringify(data);
 
+  // // Encrypt the data using AES encryption and the provided secret key and IV
+  // const encrypted = CryptoJS.AES.encrypt(dataString, secretKey, {
+  //   // iv,
+  //   mode: CryptoJS.mode.CFB,
+  //   padding: CryptoJS.pad.Pkcs7,
+  // });
+
+  // // Combine the IV and ciphertext into a single string
+  // // const ciphertext = iv.toString() + encrypted.toString();
+  // const ciphertext = encrypted.toString();
+  //  console.log(ciphertext)
+  // return ciphertext;
 
   //   console.log(data)
   //   const dataString = JSON.stringify(data);
@@ -196,7 +226,6 @@ export default function Page() {
   //   return encrypted
   //   // setEncryptedData(encrypted);
   // };
-
 
   // const encryptData = (data:any, secretKey:any) => {
   //   console.log(data,secretKey)
@@ -211,20 +240,19 @@ export default function Page() {
   //   }
   // };
 
-
-
   return (
     <div className="flex flex-col p-6 md:flex-row items-center md:items-start">
       <div className="w-[90%] md:w-1/3">
-        <Image src={Poster} alt="CINE"/>
+        <Image src={Poster} alt="CINE" />
       </div>
       <Form {...form}>
-        
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-[95%] md:w-2/3 p-6 space-y-6"
         >
-          <p className="font-semibold text-center text-[30px] text-[#0A012A]">Hey! Get Yourself Registered</p>
+          <p className="font-semibold text-center text-[30px] text-[#0A012A]">
+            Hey! Get Yourself Registered
+          </p>
           {formfields.map((fields, index) => {
             if (fields.type === "input")
               return (
@@ -249,7 +277,8 @@ export default function Page() {
               );
           })}
           <Button type="submit" className=" bg-[#0A012A] w-full">
-          <BsFillSendFill className="w-4 h-4 mr-2 text-white"/>Submit
+            <BsFillSendFill className="w-4 h-4 mr-2 text-white" />
+            Submit
           </Button>
         </form>
       </Form>
