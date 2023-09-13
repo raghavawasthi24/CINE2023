@@ -232,46 +232,51 @@ export default function Page() {
 
   return (
     <div className="flex flex-col p-6 md:flex-row items-center md:items-start">
-      <div className="w-[90%] md:w-1/3">
-        <Image src={Poster} alt="CINE" />
+      <div className="w-[90%] md:w-1/2">
+        <Image src={Poster} alt="CINE"/>
       </div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-[95%] md:w-2/3 p-6 space-y-6"
-        >
-          <p className="font-semibold text-center text-[30px] text-[#0A012A]">
-            Hey! Get Yourself Registered
-          </p>
-          {formfields.map((fields, index) => {
-            if (fields.type === "input")
-              return (
-                <InputField
-                  form={form}
-                  name={fields.key}
-                  label={fields.label}
-                  placeholder={fields.placeHolder}
-                  key={index}
-                />
-              );
-            else
-              return (
-                <SelectField
-                  form={form}
-                  name={fields.key}
-                  label={fields.label}
-                  placeholder={fields.placeHolder}
-                  options={fields.options || []}
-                  key={index}
-                />
-              );
-          })}
-          <Button type="submit" className=" bg-[#0A012A] w-full">
-            <BsFillSendFill className="w-4 h-4 mr-2 text-white" />
-            Submit
-          </Button>
-        </form>
-      </Form>
+      <div className="w-full md:w-1/2 md:shadow-2xl md:ml-6 md:p-6 p-3 sm:w-[80%]">
+        <p className="font-semibold text-center md:text-[30px] text-[20px] text-[#0A012A] my-4">Hey! Get Yourself Registered</p>
+        <Form {...form}>
+        
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+      
+          
+              {formfields.map((fields, index) => {
+                if (fields.type === "input")
+                  return (
+                    <InputField
+                      form={form}
+                      name={fields.key}
+                      label={fields.label}
+                      placeholder={fields.placeHolder}
+                      key={index}
+                    />
+                  );
+                else
+                  return (
+                    <SelectField
+                      form={form}
+                      name={fields.key}
+                      label={fields.label}
+                      placeholder={fields.placeHolder}
+                      options={fields.options || []}
+                      key={index}
+                    />
+                  );
+              })}
+  
+            <div className="w-full flex justify-center my-6">
+              <Button type="submit" className="w-[200px] bg-[#0A012A]">
+              <BsFillSendFill className="w-4 h-4 mr-2 text-white"/>Submit
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
