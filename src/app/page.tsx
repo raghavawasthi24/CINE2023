@@ -1,4 +1,5 @@
 "use client";
+import CryptoJS from "crypto-js"; // Add this import
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,6 +16,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Poster from "../../public/CINE.png";
 import { BsFillSendFill } from "react-icons/bs";
+import branch_code from "./constants/branchCode";
 
 declare global {
   interface Window {
@@ -87,6 +89,32 @@ export default function Page() {
   const [csrfToken, setCsrfToken] = useState("");
   const [captcha, setRecaptcha] = useState("");
 
+  // Function to extract branch name from studentNo
+  const getBranchFromStudentNo = (studentNo: string): string | undefined => {
+    // Extract the branch code (2 characters) from the studentNo
+    const branchCode = studentNo.slice(2, 4);
+
+    // Find the corresponding branch name in the branch_code array
+    const branchEntry = branch_code.find((entry) => entry.code === branchCode);
+
+    // Return the branch name if found, otherwise undefined
+    return branchEntry?.branch;
+  };
+
+  // Event handler for studentNo input field blur
+  const handleStudentNoBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const studentNo = e.target.value;
+
+    // Extract the branch name from the student number
+    const branchName = getBranchFromStudentNo(studentNo);
+    const updatedBranchName = branchName?.substring(1, branchName.length - 1);
+    // Check if the branchName is not undefined
+    if (updatedBranchName) {
+      // Set the branch field value in the form
+      form.setValue("branch", updatedBranchName);
+    }
+  };
+
   useEffect(() => {
     // Fetch CSRF token from the backend
     axios
@@ -130,36 +158,15 @@ export default function Page() {
     };
   }, []);
 
-  // const GoogleCaptcha = () => {
-  //   const { executeRecaptcha } = useGoogleReCaptcha();
-  //   const handleReCaptchaVerify = useCallback(async () => {
-  //     if (!executeRecaptcha) {
-  //       console.log("Execute recaptcha not yet available");
-  //       return;
-  //     }
-
-  //     const token = await executeRecaptcha();
-  //     console.log(token)
-
-  //     setRecaptcha(token)
-  //   }, [executeRecaptcha]);
-
-  //   useEffect(() => {
-  //     handleReCaptchaVerify();
-
-  //   }, [handleReCaptchaVerify]);
-
-  // };
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // Extract the student number from the form data
     const studentNo = data.studentNo;
 
     // Construct the expected email
-    const expectedEmail = `${data.name}${studentNo}@akgec.ac.in`;
-
+    const expectedEmail = new RegExp(`^[a-z]+${studentNo}@akgec.ac.in$`);
+    console.log(data, expectedEmail);
     // Check if the submitted email matches the expected email
-    if (data.email !== expectedEmail) {
+    if (!expectedEmail.test(data.email)) {
       toast({
         variant: "destructive",
         description: "College Email Id and Student Number does not match!",
@@ -178,70 +185,50 @@ export default function Page() {
     // const key="04e055a20e3b46ef6b26595c1533b8b360978ac0104e43571bbb9d894daadc86377817b1da0c2d68ed9fbabb7725f7dbf772e80e1161fcf32d2968c0cb02cf0f53"
     // const encrypted_data=encryptData(re_defindData,secretKey)
     // console.log("ye",encrypted_data)
-    const headers = {
-      "X-CSRF-Token": csrfToken,
+
+    // Function to encrypt the data using CryptoJS
+    const encryptData = (data, secretKey) => {
+      try {
+        const dataString = JSON.stringify(data);
+        const encrypted = CryptoJS.AES.encrypt(
+          dataString,
+          secretKey
+        ).toString();
+        return encrypted;
+      } catch (error) {
+        console.error("Encryption error:", error);
+        return null; // Handle the error as needed
+      }
     };
-    axios
-      .post(
-        "https://csi-examportal.onrender.com/api/v1/auth/register",
-        re_defindData,
-        { headers }
-      )
-      .then((res) => {
-        console.log(res);
-        toast({
-          description: "Please check your email to verify!",
+    // Encrypt the data
+    const encryptedData = encryptData(re_defindData, secretKey);
+
+    if (encryptedData) {
+      // Proceed with the encrypted data in your HTTP request.
+      const headers = {
+        "X-CSRF-Token": csrfToken,
+      };
+      console.log(encryptedData);
+      axios
+        .post(
+          "https://csi-examportal.onrender.com/api/v1/auth/Decregister",
+          { encryptedData, recaptchaToken: captcha },
+          { headers }
+        )
+        .then((res) => {
+          console.log(res);
+          toast({
+            description: "Please check your email to verify!",
+          });
+        })
+        .catch((err) => {
+          toast({
+            variant: "destructive",
+            description: "Something went wrong! Please Try Again",
+          });
         });
-      })
-      .catch((err) => {
-        toast({
-          variant: "destructive",
-          description: "Something went wrong! Please Try Again",
-        });
-      });
+    }
   }
-
-  // const encryptData = (data:any, secretKey:any) => {
-  // console.log("jbrbfhew")
-  // // Create an initialization vector (IV) for added security
-  // const iv = CryptoJS.lib.WordArray.random(16);
-  // const dataString = JSON.stringify(data);
-
-  // // Encrypt the data using AES encryption and the provided secret key and IV
-  // const encrypted = CryptoJS.AES.encrypt(dataString, secretKey, {
-  //   // iv,
-  //   mode: CryptoJS.mode.CFB,
-  //   padding: CryptoJS.pad.Pkcs7,
-  // });
-
-  // // Combine the IV and ciphertext into a single string
-  // // const ciphertext = iv.toString() + encrypted.toString();
-  // const ciphertext = encrypted.toString();
-  //  console.log(ciphertext)
-  // return ciphertext;
-
-  //   console.log(data)
-  //   const dataString = JSON.stringify(data);
-
-  //   const key = 'b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37'; // Replace with your secret key
-  //   const encrypted = CryptoJS.AES.encrypt(dataString, key).toString();
-  //   console.log(encrypted)
-  //   return encrypted
-  //   // setEncryptedData(encrypted);
-  // };
-
-  // const encryptData = (data:any, secretKey:any) => {
-  //   console.log(data,secretKey)
-  //   try {
-  //     const dataString = JSON.stringify(data);
-  //     const encrypted = CryptoJS.AES.encrypt(dataString, secretKey).toString();
-  //     console.log(encrypted);
-  //     return encrypted;
-  //   } catch (error) {
-  //     console.error('Encryption error:', error);
-  //     return null; // Handle the error as needed
-  //   }
-  // };
 
   return (
     <div className="flex flex-col p-6 md:flex-row items-center md:items-start">
