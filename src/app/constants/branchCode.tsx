@@ -5,11 +5,11 @@ const branch_code = [
     code: "10",
   },
   {
-    branch: "CSEAIML",
+    branch: "CSE-AIML",
     code: "153", // Assuming CSEAIML corresponds to CSE(AI&ML)
   },
   {
-    branch: "CSEDS",
+    branch: "CSE-DS",
     code: "154", // Assuming CSEDS corresponds to CSE(DS)
   },
   {
@@ -29,7 +29,7 @@ const branch_code = [
     code: "11",
   },
   {
-    branch: "CSEHINDI",
+    branch: "CSE-HINDI",
     code: "169",
   },
   {

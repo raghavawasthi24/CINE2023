@@ -93,7 +93,10 @@ export default function Page() {
   // Find the corresponding branch name in the branch_code array
   const getBranchVerification = (data) => {
     branch_code.map((item) => {
-      if (item.code === data.studentNo.substring(2, data.studentNo.length - 3))
+      if (
+        item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
+        item.branch === data.branch
+      )
         setBranchVerification(true);
     });
   };
@@ -101,7 +104,7 @@ export default function Page() {
   useEffect(() => {
     // Fetch CSRF token from the backend
     axios
-      .get("https://csi-examportal.onrender.com/api/v1/auth/preregistration")
+      .get(`${process.env.NEXT_PUBLIC_NODE_API}/preregistration`)
       .then((response) => {
         setCsrfToken(response.data.csrfToken);
       })
@@ -113,8 +116,7 @@ export default function Page() {
   useEffect(() => {
     // Load the reCAPTCHA script dynamically
     const script = document.createElement("script");
-    script.src =
-      "https://www.google.com/recaptcha/api.js?render=6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC";
+    script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`;
     script.async = true;
 
     script.onload = () => {
@@ -122,7 +124,7 @@ export default function Page() {
       // Replace YOUR_RECAPTCHA_SITE_KEY with your actual reCAPTCHA site key.
       window.grecaptcha.ready(() => {
         window.grecaptcha
-          .execute("6Lf8ViAoAAAAADuxEptRi7-3b1x-9_Kg6JYi1UqC", {
+          .execute(`${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`, {
             action: "submit",
           })
           .then((token) => {
@@ -144,39 +146,35 @@ export default function Page() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // Extract the student number from the form data
     const studentNo = data.studentNo;
-    // Check if the branch and student number match
-    getBranchVerification(data);
-    if (!branchVerification) {
-      toast({
-        variant: "destructive",
-        description: "Branch and Student Number does not match!",
-      });
-      return; // Do not proceed with form submission
-    }
     // Construct the expected email
     const expectedEmail = new RegExp(`^[a-z]+${studentNo}@akgec.ac.in$`);
-    console.log(data, expectedEmail);
+    // console.log(data, expectedEmail);
 
     // Check if the submitted email matches the expected email
-    if (!expectedEmail.test(data.email)) {
+    if (!expectedEmail.test(data.email.toLowerCase())) {
       toast({
         variant: "destructive",
         description: "College Email Id and Student Number does not match!",
       });
       return; // Do not proceed with form submission
     }
-    const secretKey =
-      "b5c1f7e190de3e88ca462b3f98b41c76a88f8a6ab82be52c75e1871cc653b37"; // 128-bit key
+    // Check if the branch and student number match
+    getBranchVerification(data);
+    if (!branchVerification) {
+      toast({
+        variant: "destructive",
+        description: "Select correct branch!",
+      });
+      return; // Do not proceed with form submission
+    }
+    const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY; // 128-bit key
 
-    console.log(data);
+    // console.log(data);
     const re_defindData = {
       ...data,
       recaptchaToken: captcha,
     };
-    console.log(re_defindData);
-    // const key="04e055a20e3b46ef6b26595c1533b8b360978ac0104e43571bbb9d894daadc86377817b1da0c2d68ed9fbabb7725f7dbf772e80e1161fcf32d2968c0cb02cf0f53"
-    // const encrypted_data=encryptData(re_defindData,secretKey)
-    // console.log("ye",encrypted_data)
+    // console.log(re_defindData);
 
     // Function to encrypt the data using CryptoJS
     const encryptData = (data, secretKey) => {
@@ -188,7 +186,7 @@ export default function Page() {
         ).toString();
         return encrypted;
       } catch (error) {
-        console.error("Encryption error:", error);
+        // console.error("Encryption error:", error);
         return null; // Handle the error as needed
       }
     };
@@ -200,20 +198,20 @@ export default function Page() {
       const headers = {
         "X-CSRF-Token": csrfToken,
       };
-      console.log(encryptedData);
+      // console.log(encryptedData);
       axios
         .post(
-          "https://csi-examportal.onrender.com/api/v1/auth/Decregister",
+          `${process.env.NEXT_PUBLIC_NODE_API}/Decregister`,
           { encryptedData, recaptchaToken: captcha },
           { headers }
         )
-        .then((res) => {
-          console.log(res);
+        .then(() => {
+          // console.log(res);
           toast({
             description: "Please check your email to verify!",
           });
         })
-        .catch((err) => {
+        .catch(() => {
           toast({
             variant: "destructive",
             description: "Something went wrong! Please Try Again",
