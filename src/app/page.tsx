@@ -214,17 +214,17 @@ export default function Page() {
 
 
   return (
-    <div className="flex">
-      <div className="w-1/2 h-screen">
+    <div className="flex flex-col p-6 md:flex-row items-center">
+      <div className="w-[90%] md:w-1/3">
         <Image src={Poster} alt="CINE"/>
       </div>
       <Form {...form}>
         
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-1/2 p-6 space-y-6"
+          className="w-[90%] md:w-2/3 p-6 space-y-6"
         >
-          <p className="font-semibold text-center text-[100px] text-blue-700">Hey! Get Yourself Registered</p>
+          <p className="font-semibold text-center text-[30px] text-[#0A012A]">Hey! Get Yourself Registered</p>
           {formfields.map((fields, index) => {
             if (fields.type === "input")
               return (

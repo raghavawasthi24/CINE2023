@@ -1,8 +1,16 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect } from 'react'
 import Poster from "../../../public/CINE.png"
 import Image from 'next/image'
+import axios from 'axios'
+import { useParams } from 'react-router-dom';
 
 const page = () => {
+    const { id } = useParams();
+    useEffect(()=>{
+        axios.post(`https://csi-examportal.onrender.com/api/verify/${id}`)
+    })
   return (
     <div className='w-screen h-screen object-contain mx-auto flex items-center justify-center gap-4'>
         <Image src={Poster} width={450} height={450} alt='CINE'/>
