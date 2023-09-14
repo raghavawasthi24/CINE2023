@@ -10,15 +10,15 @@ import Gif from "../../../public/Festivities.gif"
 
 const Page = () => {
     const { id } = useParams();
-    // useEffect(()=>{
-    //     axios.post(`https://csi-examportal.onrender.com/api/verify/${id}`).then((res)=>{
-    //       console.log(res)
-    //     })
-    //       .catch((err)=>{
-    //         console.log(err)
+    useEffect(()=>{
+        axios.post(`${process.env.NEXT_PUBLIC_VERIFY_API}/${id}`).then((res)=>{
+          console.log(res)
+        })
+          .catch((err)=>{
+            console.log(err)
           
-    //     })
-    // })
+        })
+    })
   return (
     <div className='w-full flex justify-center items-center md:flex-row flex-col-reverse md:p-6 p-2'>
         <div className='md:w-1/2 w-full'>
