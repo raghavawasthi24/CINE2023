@@ -26,7 +26,7 @@ const Page = () => {
         </div>
          <div className='flex flex-col items-center text-center md:text-[3rem] text-[25px] font-spartan md:w-1/2 md:p-7 w-full h-full' style={{ fontFamily: 'League Spartan' }}>
         <p className='mb-5'>HOORAY!</p>
-        <p>You've Registered Successfully!</p>
+        <p>You&apos;ve Registered Successfully!</p>
           <Image src={Gif} alt="Gif"/>
         </div>
         
