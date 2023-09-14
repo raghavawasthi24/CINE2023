@@ -104,7 +104,8 @@ export default function Page() {
         item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
         item.branch === data.branch
       ) {
-        // console.log(item.branch, data.branch);
+        console.log(data.studentNo.substring(2, data.studentNo.length - 3))
+        console.log(item.branch, data.branch);
         // setBranchVerification(true);
         branchVerification = true;
         // return true;
@@ -245,11 +246,19 @@ export default function Page() {
               variant: "destructive",
               description: "Recaptcha Verification Failed! Please Refresh",
             });
+            if(toggle)
+            setToggle(false)
+          else
+          setToggle(true)
           } else {
             toast({
               variant: "destructive",
               description: "Something went wrong! Please try again",
             });
+            if(toggle)
+            setToggle(false)
+          else
+          setToggle(true)
           }
         });
     }
