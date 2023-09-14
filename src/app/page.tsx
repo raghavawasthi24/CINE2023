@@ -44,7 +44,7 @@ const FormSchema = z.object({
     .string()
     .trim()
     .refine(
-      (value) => /^[2][12](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
+      (value) => /^[2][2](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
       {
         message: "Please Enter Correct Student Number*",
       }
@@ -88,7 +88,7 @@ export default function Page() {
   const { toast } = useToast();
   const [csrfToken, setCsrfToken] = useState("");
   const [captcha, setRecaptcha] = useState("");
-  const [toggle,setToggle]=useState(false)
+  const [toggle, setToggle] = useState(false);
   // const [branchVerification, setBranchVerification] = useState(false);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function Page() {
         item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
         item.branch === data.branch
       ) {
-        console.log(data.studentNo.substring(2, data.studentNo.length - 3))
+        console.log(data.studentNo.substring(2, data.studentNo.length - 3));
         console.log(item.branch, data.branch);
         // setBranchVerification(true);
         branchVerification = true;
@@ -246,19 +246,15 @@ export default function Page() {
               variant: "destructive",
               description: "Recaptcha Verification Failed! Please Refresh",
             });
-            if(toggle)
-            setToggle(false)
-          else
-          setToggle(true)
+            if (toggle) setToggle(false);
+            else setToggle(true);
           } else {
             toast({
               variant: "destructive",
               description: "Something went wrong! Please try again",
             });
-            if(toggle)
-            setToggle(false)
-          else
-          setToggle(true)
+            if (toggle) setToggle(false);
+            else setToggle(true);
           }
         });
     }
