@@ -35,7 +35,7 @@ const FormSchema = z.object({
     .trim()
     .refine(
       (value) =>
-        /^[a-zA-Z]{2,20}(\s[a-zA-Z.]{1,10})?(\s[a-zA-Z]{2,10})?(\s[a-zA-Z]{2,10})?$/.test(
+        /^[a-zA-Z]{2,25}(\s[a-zA-Z.]{1,20})?(\s[a-zA-Z]{2,10})?(\s[a-zA-Z]{2,20})?$/.test(
           value
         ),
       { message: "Please Enter Full Name" }
@@ -129,7 +129,7 @@ export default function Page() {
           })
           .then((token) => {
             // You can send the 'token' to your server for verification.
-            console.log("reCAPTCHA token:", token);
+            // console.log("reCAPTCHA token:", token);
             setRecaptcha(token);
           });
       });
@@ -214,7 +214,7 @@ export default function Page() {
         .catch(() => {
           toast({
             variant: "destructive",
-            description: "Something went wrong! Please Try Again",
+            description: "Something went wrong! Please try again",
           });
         });
     }
