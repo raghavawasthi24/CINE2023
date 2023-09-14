@@ -88,6 +88,7 @@ export default function Page() {
   const { toast } = useToast();
   const [csrfToken, setCsrfToken] = useState("");
   const [captcha, setRecaptcha] = useState("");
+  const [toggle,setToggle]=useState(false)
   // const [branchVerification, setBranchVerification] = useState(false);
 
   useEffect(() => {
@@ -154,7 +155,7 @@ export default function Page() {
       // Cleanup if needed when the component unmounts
       document.body.removeChild(script);
     };
-  }, []);
+  }, [toggle]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // Extract the student number from the form data
@@ -244,6 +245,10 @@ export default function Page() {
             variant: "destructive",
             description: "Something went wrong! Please try again",
           });
+          if(toggle==false)
+          setToggle(true)
+        else
+        setToggle(false)
           // }
         });
     }
