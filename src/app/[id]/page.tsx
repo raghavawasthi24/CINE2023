@@ -17,7 +17,7 @@ const Page = () => {
         <div className='md:w-1/2 w-full'>
             <Image src={Poster} alt='CINE'/>
         </div>
-         <div className='flex flex-col items-center text-center md:text-[35px] text-[20px] text-blue-700 font-bold md:w-1/2 md:p-6  w-full h-full'>
+         <div className='flex flex-col items-center text-center md:text-[35px] text-[20px] text-blue-700 font-bold md:w-1/2 md:p-7 w-full h-full'>
         <p className=' '>HOORAY!</p>
         <p>You have successfully registered!</p>
           <Image src={Gif} alt="Gif"/>
