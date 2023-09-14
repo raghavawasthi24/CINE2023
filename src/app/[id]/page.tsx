@@ -7,6 +7,7 @@ import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import Gif from "../../../public/Festivities.gif"
 
+
 const Page = () => {
     const { id } = useParams();
     useEffect(()=>{
@@ -17,9 +18,9 @@ const Page = () => {
         <div className='md:w-1/2 w-full'>
             <Image src={Poster} alt='CINE'/>
         </div>
-         <div className='flex flex-col items-center text-center md:text-[35px] text-[20px] text-blue-700 font-bold md:w-1/2 md:p-7 w-full h-full'>
-        <p className=' '>HOORAY!</p>
-        <p>You have successfully registered!</p>
+         <div className='flex flex-col items-center text-center md:text-[3rem] text-[25px] font-spartan md:w-1/2 md:p-7 w-full h-full' style={{ fontFamily: 'League Spartan' }}>
+        <p className='mb-5'>HOORAY!</p>
+        <p>You've Registered Successfully!</p>
           <Image src={Gif} alt="Gif"/>
         </div>
         
