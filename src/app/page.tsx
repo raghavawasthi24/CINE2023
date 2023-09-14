@@ -222,7 +222,12 @@ export default function Page() {
         .then(() => {
           // console.log(res);
           toast({
-            description: "Please check your email to verify!",
+            title:"Your response has been recorded.",
+            description: (
+              <pre className="m-0 w-[340px] rounded-md bg-green-600 p-4">
+                <code className="text-white">Please check email to verify!</code>
+              </pre>
+            ),
           });
         })
         .catch(() => {
