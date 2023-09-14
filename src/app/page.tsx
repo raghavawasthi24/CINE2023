@@ -234,17 +234,22 @@ export default function Page() {
         })
         .catch((error) => {
           // console.error("Error submitting form:", error);
-          // if (error.response.status === 401) {
-          //   toast({
-          //     variant: "destructive",
-          //     description: "Already Registered!",
-          //   });
-          // } else {
-          toast({
-            variant: "destructive",
-            description: "Something went wrong! Please try again",
-          });
-          // }
+          if (error.response.status === 401) {
+            toast({
+              variant: "destructive",
+              description: "Already Registered!",
+            });
+          } else if (error.response.status === 400) {
+            toast({
+              variant: "destructive",
+              description: "Recaptcha Verification Failed! Please Refresh",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              description: "Something went wrong! Please try again",
+            });
+          }
         });
     }
   }
