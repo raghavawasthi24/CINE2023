@@ -38,29 +38,29 @@ const FormSchema = z.object({
         /^[a-zA-Z]{2,25}(\s[a-zA-Z.]{1,20})?(\s[a-zA-Z]{2,10})?(\s[a-zA-Z]{2,20})?$/.test(
           value
         ),
-      { message: "Please Enter Full Name" }
+      { message: "Please Enter Full Name*" }
     ),
   studentNo: z
     .string()
     .trim()
     .refine(
-      (value) => /^[2][12](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
+      (value) => /^[2][2](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
       {
-        message: "Please Enter Correct Student Number",
+        message: "Please Enter Correct Student Number*",
       }
     ),
   mobileNo: z
     .string()
     .trim()
     .refine((value) => /^[6-9]([0-9]){9}$/.test(value), {
-      message: "Invalid Mobile Number",
+      message: "Invalid Mobile Number*",
     }),
   email: z
     .string()
     .trim()
     .refine(
       (value) => /^([a-zA-Z]){2,15}2[12]{1}[0-9]{5,6}@akgec.ac.in$/.test(value),
-      { message: "Please Enter Correct College Email Id" }
+      { message: "Please Enter Correct College Email Id*" }
     ),
   branch: z.enum([
     "CSE",
@@ -222,10 +222,12 @@ export default function Page() {
         .then(() => {
           // console.log(res);
           toast({
-            title:"Your response has been recorded.",
+            title: "Your response has been recorded.",
             description: (
               <pre className="m-0 w-[340px] rounded-md bg-green-600 p-4">
-                <code className="text-white">Please check email to verify!</code>
+                <code className="text-white">
+                  Please check email to verify!
+                </code>
               </pre>
             ),
           });
