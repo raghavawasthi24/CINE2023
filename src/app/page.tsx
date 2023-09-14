@@ -44,7 +44,7 @@ const FormSchema = z.object({
     .string()
     .trim()
     .refine(
-      (value) => /^[2][2](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
+      (value) => /^[2][12](([x]{3})|[0-9]{2,3})([0-9]){3}(-d)?$/.test(value),
       {
         message: "Please Enter Correct Student Number*",
       }
@@ -232,11 +232,19 @@ export default function Page() {
             ),
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          // console.error("Error submitting form:", error);
+          // if (error.response.status === 401) {
+          //   toast({
+          //     variant: "destructive",
+          //     description: "Already Registered!",
+          //   });
+          // } else {
           toast({
             variant: "destructive",
             description: "Something went wrong! Please try again",
           });
+          // }
         });
     }
   }
