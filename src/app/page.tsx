@@ -88,17 +88,30 @@ export default function Page() {
   const { toast } = useToast();
   const [csrfToken, setCsrfToken] = useState("");
   const [captcha, setRecaptcha] = useState("");
-  const [branchVerification, setBranchVerification] = useState(false);
+  // const [branchVerification, setBranchVerification] = useState(false);
+
+  useEffect(() => {
+    form.formState.isDirty && form.trigger("studentNo");
+  }, [form.watch("studentNo")]);
 
   // Find the corresponding branch name in the branch_code array
-  const getBranchVerification = (data:any) => {
+  const getBranchVerification = (data: any) => {
+    // console.log(data, "checking");
+    let branchVerification = false;
     branch_code.map((item) => {
       if (
         item.code === data.studentNo.substring(2, data.studentNo.length - 3) &&
         item.branch === data.branch
-      )
-        setBranchVerification(true);
+      ) {
+        // console.log(item.branch, data.branch);
+        // setBranchVerification(true);
+        branchVerification = true;
+        // return true;
+      }
     });
+    if (branchVerification) return true;
+    else return false;
+    // return false;
   };
 
   useEffect(() => {
@@ -148,7 +161,7 @@ export default function Page() {
     const studentNo = data.studentNo;
     // Construct the expected email
     const expectedEmail = new RegExp(`^[a-z]+${studentNo}@akgec.ac.in$`);
-    console.log(data, expectedEmail);
+    // console.log(data, expectedEmail);
 
     // Check if the submitted email matches the expected email
     if (!expectedEmail.test(data.email.toLowerCase())) {
@@ -159,8 +172,9 @@ export default function Page() {
       return; // Do not proceed with form submission
     }
     // Check if the branch and student number match
-    getBranchVerification(data);
-    if (!branchVerification) {
+    // console.log(getBranchVerification(data));
+    // if (!branchVerification) {
+    if (!getBranchVerification(data)) {
       toast({
         variant: "destructive",
         description: "Select correct branch!",
@@ -177,7 +191,7 @@ export default function Page() {
     // console.log(re_defindData);
 
     // Function to encrypt the data using CryptoJS
-    const encryptData = (data:any, secretKey:any) => {
+    const encryptData = (data: any, secretKey: any) => {
       try {
         const dataString = JSON.stringify(data);
         const encrypted = CryptoJS.AES.encrypt(
