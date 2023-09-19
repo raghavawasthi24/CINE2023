@@ -17,7 +17,7 @@ const Page = () => {
         style={{ fontFamily: "League Spartan" }}
       >
         <p className="mb-5"></p>
-        <p>You&apos;ve already Registered for Managerial Round!</p>
+        <p>You&apos;ve already Registered!</p>
         <Image src={Gif} alt="Gif" />
       </div>
     </div>
