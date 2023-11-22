@@ -24,6 +24,30 @@ export const formfields = [
     placeHolder: "Enter your email",
   },
   {
+    key: "year",
+    type: "select",
+    label: "Year",
+    placeHolder: "Select your Year",
+    options:[
+      {
+        value: "1",
+        label: "1",
+      },
+      {
+        value: "2",
+        label: "2",
+      },
+      {
+        value: "3",
+        label: "3",
+      },
+      {
+        value: "4",
+        label: "4",
+      },
+    ]
+  },
+  {
     key: "branch",
     type: "select",
     label: "Branch",

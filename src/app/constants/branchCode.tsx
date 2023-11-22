@@ -10,7 +10,7 @@ const branch_code = [
   },
   {
     branch: "CSE-DS",
-    code: "154", // Assuming CSEDS corresponds to CSE(DS)
+    code: "154" || "54", // Assuming CSEDS corresponds to CSE(DS)
   },
   {
     branch: "CS",
