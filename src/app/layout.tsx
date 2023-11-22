@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CINE2023-Registration Form',
+  title: 'CodeShell4.0 - Registration Form',
   description: 'Organizing by Computer Society Of India',
 }
 
